@@ -4774,6 +4774,10 @@ ${sections.map(function(s) {
  */
 const Sync = (() => {
   const SETTINGS_URL = 'sync_server_url';
+  // Adresse du serveur de synchro inscrite en dur : chaque tablette est reliée
+  // automatiquement, sans configuration. Modifiable via ⚙️ Serveur — une URL
+  // enregistrée manuellement sur la tablette reste prioritaire sur ce défaut.
+  const DEFAULT_SERVER_URL = 'https://outil-fdp-chantier.onrender.com';
   const cursorKey = (cid) => 'sync_cursor:' + cid;
   const outboxKey = (cid) => 'sync_outbox:' + cid;
 
@@ -4789,7 +4793,7 @@ const Sync = (() => {
   // ---------- Réglages ----------
   async function getServerUrl() {
     if (_serverUrl) return _serverUrl;
-    _serverUrl = (await DB.Settings.get(SETTINGS_URL, '')) || '';
+    _serverUrl = (await DB.Settings.get(SETTINGS_URL, '')) || DEFAULT_SERVER_URL;
     return _serverUrl;
   }
   async function setServerUrl(u) {

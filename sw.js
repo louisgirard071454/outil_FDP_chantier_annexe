@@ -2,7 +2,7 @@
    À déployer À CÔTÉ du fichier index.html (même dossier).
    Stratégie : cache-first avec mise en cache à la volée des fichiers visités,
    pour que l'application reste utilisable hors-ligne après une première visite. */
-const CACHE = 'ineo-chantier-v2';
+const CACHE = 'ineo-chantier-v3';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
