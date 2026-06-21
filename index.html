@@ -1480,6 +1480,7 @@ const DB = (() => {
   const Dosimetry = {
     getAllForPoste: (posteId) => getAllByIndex(STORES.DOSIMETRY, 'posteId', posteId),
     getAllForChantier: (chantierId) => getAllByIndex(STORES.DOSIMETRY, 'chantierId', chantierId),
+    get: (id) => promReq(tx(STORES.DOSIMETRY).get(id)),
     save: (d) => promReq(tx(STORES.DOSIMETRY, 'readwrite').put(d)),
     delete: (id) => promReq(tx(STORES.DOSIMETRY, 'readwrite').delete(id)),
   };
@@ -4984,9 +4985,11 @@ const Sync = (() => {
       const pushedKeys = [...m.keys()];
       const records = [];
       for (const e of m.values()) {
-        const rec = await loadRecord(e.store, e.id);
-        if (rec) records.push({ store: e.store, id: e.id, updatedAt: rec.updatedAt || Date.now(), deleted: !!rec.deleted, data: rec });
-        else records.push({ store: e.store, id: e.id, updatedAt: Date.now(), deleted: true, data: { deleted: true } });
+        try {
+          const rec = await loadRecord(e.store, e.id);
+          if (rec) records.push({ store: e.store, id: e.id, updatedAt: rec.updatedAt || Date.now(), deleted: !!rec.deleted, data: rec });
+          else records.push({ store: e.store, id: e.id, updatedAt: Date.now(), deleted: true, data: { deleted: true } });
+        } catch (errLoad) { console.warn('[Sync] enregistrement ignoré (chargement impossible)', e, errLoad); }
       }
       const since = await getCursor(cid);
       const res = await fetch(url + '/api/sync/' + encodeURIComponent(ch.syncCode), {
